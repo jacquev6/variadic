@@ -15,7 +15,7 @@ extensions.append("alabaster")
 html_theme = "alabaster"
 html_sidebars = {
     "**": [
-        "about.html", "navigation.html", "searchbox.html",
+        "about.html", "searchbox.html",
     ]
 }
 html_theme_options = {
@@ -27,9 +27,9 @@ html_theme_options = {
 
 # http://sphinx-doc.org/ext/autodoc.html
 extensions.append("sphinx.ext.autodoc")
-autoclass_content ="both"
+# autoclass_content
 autodoc_member_order = "bysource"
-autodoc_default_flags = ["members"]
+# autodoc_default_flags
 # autodoc_docstring_signature
 # autodoc_mock_imports
 add_module_names = False
@@ -39,6 +39,6 @@ add_class_names = False
 # http://sphinx-doc.org/ext/doctest.html
 extensions.append("sphinx.ext.doctest")
 # doctest_path
-# doctest_global_setup
+doctest_global_setup = "from variadic import variadic"
 # doctest_global_cleanup
 doctest_test_doctest_blocks=True

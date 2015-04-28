@@ -3,7 +3,13 @@
 # Copyright 2015 Vincent Jacques <vincent@vincent-jacques.net>
 
 """
-Do you see me? Yes you do!
+Define a function:
+
+    >>> @variadic(int)
+    ... def f(args):
+    ...   return list(args)
+    >>> f(1, 2, [3, 4], xrange(5, 8))
+    [1, 2, 3, 4, 5, 6, 7]
 """
 
 import itertools
