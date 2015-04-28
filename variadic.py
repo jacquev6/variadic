@@ -73,12 +73,11 @@ def variadic(typ):
         assert spec.defaults is None
         assert spec.varargs is None
         assert spec.keywords is None
-        assert name != "call_wrapped"  # @todo What if?
 
         def call_wrapped(args):
             return wrapped(flatten(args))
-        source = "def {}(*{}): return call_wrapped({})".format(name, spec.args[0], spec.args[0])
-        exec_globals = {"call_wrapped": call_wrapped}
+        source = "def {}(*{}): return {}_({})".format(name, spec.args[0], name, spec.args[0])
+        exec_globals = {"{}_".format(name): call_wrapped}
         exec source in exec_globals
         wrapper = exec_globals[name]
         functools.update_wrapper(wrapper, wrapped)
