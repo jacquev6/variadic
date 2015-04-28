@@ -5,7 +5,7 @@
 
 import setuptools
 
-version = "0.0.0"
+version = "0.1.0"
 
 
 setuptools.setup(
@@ -31,6 +31,7 @@ setuptools.setup(
     ],
     test_suite="variadic",
     use_2to3=True,
+    convert_2to3_doctests = ["variadic.py", "README.rst"],
     command_options={
         "build_sphinx": {
             "version": ("setup.py", version),
