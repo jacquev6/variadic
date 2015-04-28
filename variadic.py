@@ -72,25 +72,33 @@ def variadic(typ):
         assert len(spec.args) >= 1
         assert spec.defaults is None
         assert spec.varargs is None
-        assert spec.keywords is None
 
         new_spec = inspect.ArgSpec(
             args=spec.args[:-1],
             varargs=spec.args[-1],
             defaults=None,
-            keywords=None,
+            keywords=spec.keywords,
         )
 
-        def call_wrapped(posargs, varargs):
-            args = list(posargs)
-            args.append(flatten(varargs))
-            return wrapped(*args)
+        def call_wrapped(*args, **kwds):
+            args = list(args)
+            args[-1] = flatten(args[-1])
+            return wrapped(*args, **kwds)
 
-        source = "def {name}({proto}): return {name}_(({call_1}), {call_2})".format(
+        prototype = list(new_spec.args)
+        prototype.append("*{}".format(new_spec.varargs))
+        if new_spec.keywords is not None:
+            prototype.append("**{}".format(new_spec.keywords))
+
+        call = list(new_spec.args)
+        call.append(new_spec.varargs)
+        if new_spec.keywords is not None:
+            call.append("**{}".format(new_spec.keywords))
+
+        source = "def {name}({proto}): return {name}_({call})".format(
             name=name,
-            proto=", ".join(itertools.chain(new_spec.args, ["*{}".format(new_spec.varargs)])),
-            call_1=", ".join(new_spec.args),
-            call_2=new_spec.varargs,
+            proto=", ".join(prototype),
+            call=", ".join(call),
         )
         exec_globals = {"{}_".format(name): call_wrapped}
         exec source in exec_globals
@@ -154,6 +162,12 @@ class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
 
     def test_method(self):
         self.assertEqual(self.f(1, 2, 3, [4, 5], 6), (self, 1, 2, [3, 4, 5, 6]))
+
+    def test_kwds_after_varargs(self):
+        @variadic(int)
+        def f(a, b, xs, **kwds):
+            return a, b, list(xs), kwds
+        self.assertEqual(f(1, 2, 3, [4, 5], 6, c=7, d=8), (1, 2, [3, 4, 5, 6], {"c": 7, "d": 8}))
 
 
 if __name__ == "__main__":
