@@ -12,8 +12,15 @@ Define a function:
     [1, 2, 3, 4, 5, 6, 7]
 """
 
+import functools
 import itertools
 import unittest
+
+# Todo-list:
+# - allow passing the flatten function instead of typ
+# - allow an even simpler usage without any parameters
+# - make sure exceptions never show any internals like wrapped, wrapper, call_wrapper, etc.
+# - handle default arguments (the last parameter should have [] as default argument)
 
 
 def variadic(typ):
@@ -32,6 +39,7 @@ def variadic(typ):
     def decorator(wrapped):
         def wrapper(*args):
             return wrapped(flatten(args))
+        functools.update_wrapper(wrapper, wrapped)
         return wrapper
     return decorator
 
@@ -40,8 +48,15 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
     def setUp(self):
         @variadic(int)
         def f(xs):
+            "f's doc"
             return list(xs)
         self.f = f
+
+    def test_name_is_preserved(self):
+        self.assertEqual(self.f.__name__, "f")
+
+    def test_doc_is_preserved(self):
+        self.assertEqual(self.f.__doc__, "f's doc")
 
     def test_call_without_arguments(self):
         self.assertEqual(self.f(), [])
