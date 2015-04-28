@@ -69,14 +69,29 @@ def variadic(typ):
         spec = inspect.getargspec(wrapped)
         name = wrapped.__name__
 
-        assert len(spec.args) == 1
+        assert len(spec.args) >= 1
         assert spec.defaults is None
         assert spec.varargs is None
         assert spec.keywords is None
 
-        def call_wrapped(args):
-            return wrapped(flatten(args))
-        source = "def {}(*{}): return {}_({})".format(name, spec.args[0], name, spec.args[0])
+        new_spec = inspect.ArgSpec(
+            args=spec.args[:-1],
+            varargs=spec.args[-1],
+            defaults=None,
+            keywords=None,
+        )
+
+        def call_wrapped(posargs, varargs):
+            args = list(posargs)
+            args.append(flatten(varargs))
+            return wrapped(*args)
+
+        source = "def {name}({proto}): return {name}_(({call_1}), {call_2})".format(
+            name=name,
+            proto=", ".join(itertools.chain(new_spec.args, ["*{}".format(new_spec.varargs)])),
+            call_1=", ".join(new_spec.args),
+            call_2=new_spec.varargs,
+        )
         exec_globals = {"{}_".format(name): call_wrapped}
         exec source in exec_globals
         wrapper = exec_globals[name]
@@ -124,6 +139,21 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
         with self.assertRaises(TypeError) as catcher:
             self.f(a=1)
         self.assertEqual(catcher.exception.args, ("f() got an unexpected keyword argument 'a'",))
+
+
+class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
+    def test_args_before_varargs(self):
+        @variadic(int)
+        def f(a, b, xs):
+            return a, b, list(xs)
+        self.assertEqual(f(1, 2, 3, [4, 5], 6), (1, 2, [3, 4, 5, 6]))
+
+    @variadic(int)
+    def f(self, a, b, xs):
+        return self, a, b, list(xs)
+
+    def test_method(self):
+        self.assertEqual(self.f(1, 2, 3, [4, 5], 6), (self, 1, 2, [3, 4, 5, 6]))
 
 
 if __name__ == "__main__":
