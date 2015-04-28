@@ -45,6 +45,11 @@ import unittest
 # - make sure exceptions never show any internals like wrapped, wrapper, call_wrapper, etc.
 # - handle default arguments (the last parameter should have [] as default argument)
 # - add a parameter string to be prepended or appended to the docstring
+# - support parameters before the variadic one
+# - support default values
+# - support **kwds
+# - support decorating callables that are not functions?
+# - verify that closures are preserved
 
 
 def variadic(typ):
@@ -62,16 +67,20 @@ def variadic(typ):
 
     def decorator(wrapped):
         spec = inspect.getargspec(wrapped)
+        name = wrapped.__name__
+
         assert len(spec.args) == 1
         assert spec.defaults is None
         assert spec.varargs is None
         assert spec.keywords is None
+        assert name != "call_wrapped"  # @todo What if?
+
         def call_wrapped(args):
             return wrapped(flatten(args))
-        code = "def wrapper(*{}): return call_wrapped({})".format(spec.args[0], spec.args[0])
+        source = "def {}(*{}): return call_wrapped({})".format(name, spec.args[0], spec.args[0])
         exec_globals = {"call_wrapped": call_wrapped}
-        exec code in exec_globals
-        wrapper = exec_globals["wrapper"]
+        exec source in exec_globals
+        wrapper = exec_globals[name]
         functools.update_wrapper(wrapper, wrapped)
         return wrapper
     return decorator
@@ -111,6 +120,11 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
 
     def test_call_with_lists_and_arguments(self):
         self.assertEqual(self.f([1, 2], 3, 4, [5, 6], 7), [1, 2, 3, 4, 5, 6, 7])
+
+    def test_call_with_keywords(self):
+        with self.assertRaises(TypeError) as catcher:
+            self.f(a=1)
+        self.assertEqual(catcher.exception.args, ("f() got an unexpected keyword argument 'a'",))
 
 
 if __name__ == "__main__":
