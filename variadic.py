@@ -34,9 +34,12 @@ And you can even mix them:
     [1, 2, 3, 4, 5, 6, 7]
 """
 
+import ast
 import functools
 import inspect
 import itertools
+import sys
+import types
 import unittest
 
 # Todo-list:
@@ -44,6 +47,16 @@ import unittest
 # - allow an even simpler usage without any parameters
 # - add a parameter string to be prepended or appended to the docstring
 # - support decorating callables that are not functions?
+
+
+# >>> help(types.FunctionType)
+# class function(object)
+#  |  function(code, globals[, name[, argdefs[, closure]]])
+#  |
+#  |  Create a function object from a code object and a dictionary.
+#  |  The optional name string overrides the name from the code object.
+#  |  The optional argdefs tuple specifies the default argument values.
+#  |  The optional closure tuple supplies the bindings for free variables.
 
 
 def variadic(typ):
@@ -74,30 +87,48 @@ def variadic(typ):
             keywords=spec.keywords,
         )
 
-        def call_wrapped(*args, **kwds):
-            args = list(args)
-            args[-1] = flatten(args[-1])
-            return wrapped(*args, **kwds)
+        def call_wrapped(posargs, varargs, keywords={}):
+            args = list(posargs)
+            args.append(flatten(varargs))
+            return wrapped(*args, **keywords)
 
-        prototype = list(new_spec.args)
-        prototype.append("*{}".format(new_spec.varargs))
-        if new_spec.keywords is not None:
-            prototype.append("**{}".format(new_spec.keywords))
-
-        call = list(new_spec.args)
-        call.append(new_spec.varargs)
-        if new_spec.keywords is not None:
-            call.append("**{}".format(new_spec.keywords))
-
-        source = "def {name}({proto}): return {name}_({call})".format(
+        # Example was generated with print ast.dump(ast.parse("def f(a, b, *args, **kwds): return call_wrapped((a, b), args, kwds)"), include_attributes=True)
+        # http://code.activestate.com/recipes/578353-code-to-source-and-back/ helped a lot
+        # http://stackoverflow.com/questions/10303248#29927459
+        if sys.hexversion < 0x03000000:
+            wrapper_ast_args = ast.arguments(
+                    args=[ast.Name(id=a, ctx=ast.Param(), lineno=1, col_offset=0) for a in new_spec.args],
+                    vararg=new_spec.varargs,
+                    kwarg=new_spec.keywords,
+                    defaults=[]
+                )
+        else:
+            wrapper_ast_args = ast.arguments(
+                args=[ast.arg(arg=a, annotation=None, lineno=1, col_offset=0) for a in new_spec.args],
+                vararg=None if new_spec.varargs is None else ast.arg(arg=new_spec.varargs, annotation=None, lineno=1, col_offset=0),
+                kwonlyargs=[],
+                kw_defaults=[],
+                kwarg=None if new_spec.keywords is None else ast.arg(arg=new_spec.keywords, annotation=None, lineno=1, col_offset=0),
+                defaults=[]
+            )
+        wrapper_ast = ast.Module(body=[ast.FunctionDef(
             name=name,
-            proto=", ".join(prototype),
-            call=", ".join(call),
-        )
-        exec_globals = {"{}_".format(name): call_wrapped}
-        exec source in exec_globals
-        wrapper = exec_globals[name]
-        wrapper.__defaults__ = new_spec.defaults
+            args=wrapper_ast_args,
+            body=[ast.Return(value=ast.Call(
+                func=ast.Name(id="call_wrapped", ctx=ast.Load(), lineno=1, col_offset=0),
+                args=[
+                    ast.Tuple(elts=[ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in new_spec.args], ctx=ast.Load(), lineno=1, col_offset=0),
+                    ast.Name(id=new_spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0),
+                ] + ([] if new_spec.keywords is None else [ast.Name(id=new_spec.keywords, ctx=ast.Load(), lineno=1, col_offset=0)]),
+                keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
+            ), lineno=1, col_offset=0)],
+            decorator_list=[],
+            lineno=1,
+            col_offset=0
+        )])
+        wrapper_code = [c for c in compile(wrapper_ast, "<not_a_file>", "exec").co_consts if isinstance(c, types.CodeType)][0]
+        wrapper = types.FunctionType(wrapper_code, {"call_wrapped": call_wrapped}, argdefs=new_spec.defaults)
+
         functools.update_wrapper(wrapper, wrapped)
         return wrapper
     return decorator
@@ -110,15 +141,23 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
             "f's doc"
             return list(xs)
         self.f = f
+        @variadic(int)
+        def g(ys):
+            "g's doc"
+            return list(ys)
+        self.g = g
 
     def test_name_is_preserved(self):
         self.assertEqual(self.f.__name__, "f")
+        self.assertEqual(self.g.__name__, "g")
 
     def test_doc_is_preserved(self):
         self.assertEqual(self.f.__doc__, "f's doc")
+        self.assertEqual(self.g.__doc__, "g's doc")
 
     def test_argspec_keeps_param_name(self):
         self.assertEqual(inspect.getargspec(self.f).varargs, "xs")
+        self.assertEqual(inspect.getargspec(self.g).varargs, "ys")
 
     def test_call_without_arguments(self):
         self.assertEqual(self.f(), [])
@@ -142,6 +181,9 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
         with self.assertRaises(TypeError) as catcher:
             self.f(a=1)
         self.assertEqual(catcher.exception.args, ("f() got an unexpected keyword argument 'a'",))
+        with self.assertRaises(TypeError) as catcher:
+            self.g(a=1)
+        self.assertEqual(catcher.exception.args, ("g() got an unexpected keyword argument 'a'",))
 
 
 class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
@@ -179,6 +221,7 @@ class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
         self.assertEqual(f(1, 2), (42, [1, 2]))
         a = 57
         self.assertEqual(f(1, 2), (57, [1, 2]))
+
 
 if __name__ == "__main__":
     unittest.main()
