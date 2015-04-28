@@ -2,6 +2,10 @@
 
 # Copyright 2015 Vincent Jacques <vincent@vincent-jacques.net>
 
+"""
+Do you see me? Yes you do!
+"""
+
 import itertools
 import unittest
 
