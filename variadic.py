@@ -3,12 +3,34 @@
 # Copyright 2015 Vincent Jacques <vincent@vincent-jacques.net>
 
 """
-Define a function:
+Define a variadic function:
 
     >>> @variadic(int)
     ... def f(args):
     ...   return list(args)
-    >>> f(1, 2, [3, 4], xrange(5, 8))
+
+It can be called with a variable number of arguments,
+and they are passed to decorated function as a single, iterable, parameter:
+
+    >>> f()
+    []
+    >>> f(1)
+    [1]
+    >>> f(1, 2, 3, 4)
+    [1, 2, 3, 4]
+
+But it can also be called with lists (any iterable, in fact) of arguments:
+
+    >>> f([])
+    []
+    >>> f([1, 2, 3], [4, 5, 6])
+    [1, 2, 3, 4, 5, 6]
+    >>> f(xrange(1, 4))
+    [1, 2, 3]
+
+And you can even mix them:
+
+    >>> f(1, [2, 3], 4, xrange(5, 8))
     [1, 2, 3, 4, 5, 6, 7]
 """
 
@@ -21,6 +43,7 @@ import unittest
 # - allow an even simpler usage without any parameters
 # - make sure exceptions never show any internals like wrapped, wrapper, call_wrapper, etc.
 # - handle default arguments (the last parameter should have [] as default argument)
+# - add a parameter string to be prepended or appended to the docstring
 
 
 def variadic(typ):
