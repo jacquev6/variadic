@@ -35,6 +35,7 @@ And you can even mix them:
 """
 
 import functools
+import inspect
 import itertools
 import unittest
 
@@ -60,8 +61,17 @@ def variadic(typ):
         return itertools.chain.from_iterable(flat)
 
     def decorator(wrapped):
-        def wrapper(*args):
+        spec = inspect.getargspec(wrapped)
+        assert len(spec.args) == 1
+        assert spec.defaults is None
+        assert spec.varargs is None
+        assert spec.keywords is None
+        def call_wrapped(args):
             return wrapped(flatten(args))
+        code = "def wrapper(*{}): return call_wrapped({})".format(spec.args[0], spec.args[0])
+        exec_globals = {"call_wrapped": call_wrapped}
+        exec code in exec_globals
+        wrapper = exec_globals["wrapper"]
         functools.update_wrapper(wrapper, wrapped)
         return wrapper
     return decorator
@@ -80,6 +90,9 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
 
     def test_doc_is_preserved(self):
         self.assertEqual(self.f.__doc__, "f's doc")
+
+    def test_argspec_keeps_param_name(self):
+        self.assertEqual(inspect.getargspec(self.f).varargs, "xs")
 
     def test_call_without_arguments(self):
         self.assertEqual(self.f(), [])

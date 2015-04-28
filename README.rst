@@ -1,5 +1,8 @@
 variadic is a Python (2.7+ and 3.4+) `function decorator <https://docs.python.org/2/glossary.html#term-decorator>`__
 to write variadic functions accepting a mix of arguments and iterables of those arguments.
+Oh, and they keep their `argspec <https://docs.python.org/2/library/inspect.html#inspect.getargspec>`__,
+so tools doing introspection (Sphinx doc, IDEs, etc.) will work well.
+No ugly ``f(*args, **kwds)`` in your doc!
 
 It's licensed under the `MIT license <http://choosealicense.com/licenses/mit/>`__.
 It's available on the `Python package index <http://pypi.python.org/pypi/variadic>`__,
