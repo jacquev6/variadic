@@ -42,12 +42,7 @@ import unittest
 # Todo-list:
 # - allow passing the flatten function instead of typ
 # - allow an even simpler usage without any parameters
-# - make sure exceptions never show any internals like wrapped, wrapper, call_wrapper, etc.
-# - handle default arguments (the last parameter should have [] as default argument)
 # - add a parameter string to be prepended or appended to the docstring
-# - support parameters before the variadic one
-# - support default values
-# - support **kwds
 # - support decorating callables that are not functions?
 # - verify that closures are preserved
 
@@ -70,13 +65,13 @@ def variadic(typ):
         name = wrapped.__name__
 
         assert len(spec.args) >= 1
-        assert spec.defaults is None
+        assert spec.defaults is None or spec.defaults[-1] == []
         assert spec.varargs is None
 
         new_spec = inspect.ArgSpec(
             args=spec.args[:-1],
             varargs=spec.args[-1],
-            defaults=None,
+            defaults=None if spec.defaults is None else spec.defaults[:-1],
             keywords=spec.keywords,
         )
 
@@ -103,6 +98,7 @@ def variadic(typ):
         exec_globals = {"{}_".format(name): call_wrapped}
         exec source in exec_globals
         wrapper = exec_globals[name]
+        wrapper.__defaults__ = new_spec.defaults
         functools.update_wrapper(wrapper, wrapped)
         return wrapper
     return decorator
@@ -168,6 +164,13 @@ class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
         def f(a, b, xs, **kwds):
             return a, b, list(xs), kwds
         self.assertEqual(f(1, 2, 3, [4, 5], 6, c=7, d=8), (1, 2, [3, 4, 5, 6], {"c": 7, "d": 8}))
+
+    def test_defaults_on_args_before_varargs(self):
+        default = object()  # To avoid implementations wich would stringify the default values and feed them to exec.
+        @variadic(int)
+        def f(a=None, b=default, xs=[]):
+            return a, b, list(xs)
+        self.assertEqual(f(), (None, default, []))
 
 
 if __name__ == "__main__":
