@@ -1,0 +1,6 @@
+/variadic.egg-info/
+/dist/
+*.pyc
+/build/
+/.coverage
+/htmlcov/
