@@ -44,7 +44,6 @@ import unittest
 # - allow an even simpler usage without any parameters
 # - add a parameter string to be prepended or appended to the docstring
 # - support decorating callables that are not functions?
-# - verify that closures are preserved
 
 
 def variadic(typ):
@@ -172,6 +171,14 @@ class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
             return a, b, list(xs)
         self.assertEqual(f(), (None, default, []))
 
+    def test_closures(self):
+        a = 42
+        @variadic(int)
+        def f(xs):
+            return a, list(xs)
+        self.assertEqual(f(1, 2), (42, [1, 2]))
+        a = 57
+        self.assertEqual(f(1, 2), (57, [1, 2]))
 
 if __name__ == "__main__":
     unittest.main()
