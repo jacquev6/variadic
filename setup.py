@@ -18,7 +18,7 @@ setuptools.setup(
     py_modules=["variadic"],
     license="MIT",
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved",
         "License :: OSI Approved :: MIT License",
