@@ -112,7 +112,12 @@ import unittest
 
 def variadic(typ):
     """
-    Make a function very-variadic.
+    Decorator taking a variadic function and making a very-variadic function from it:
+    a function that can be called with a variable number of iterables of arguments.
+
+    :param typ: the type (or tuple of types) of arguments expected.
+        Variadic arguments that are instances of this type will be passed to the decorated function as-is.
+        Others will be iterated and their contents will be passed.
     """
     def flatten(args):
         flat = []
