@@ -60,7 +60,7 @@ Import::
 Define a function::
 
     >>> @variadic(int)
-    ... def f(args):
-    ...   return list(args)
+    ... def f(*args):
+    ...   return args
     >>> f(1, 2, [3, 4], xrange(5, 8))
-    [1, 2, 3, 4, 5, 6, 7]
+    (1, 2, 3, 4, 5, 6, 7)
