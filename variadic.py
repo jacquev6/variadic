@@ -80,11 +80,6 @@ def variadic(typ):
 
         assert spec.varargs is not None
 
-        def call_wrapped(posargs, varargs, keywords={}):
-            args = list(posargs)
-            args.extend(flatten(varargs))
-            return wrapped(*args, **keywords)
-
         # Example was generated with print ast.dump(ast.parse("def f(a, b, *args, **kwds): return call_wrapped((a, b), args, kwds)"), include_attributes=True)
         # http://code.activestate.com/recipes/578353-code-to-source-and-back/ helped a lot
         # http://stackoverflow.com/questions/10303248#29927459
@@ -108,19 +103,23 @@ def variadic(typ):
             name=name,
             args=wrapper_ast_args,
             body=[ast.Return(value=ast.Call(
-                func=ast.Name(id="call_wrapped", ctx=ast.Load(), lineno=1, col_offset=0),
-                args=[
-                    ast.Tuple(elts=[ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in spec.args], ctx=ast.Load(), lineno=1, col_offset=0),
-                    ast.Name(id=spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0),
-                ] + ([] if spec.keywords is None else [ast.Name(id=spec.keywords, ctx=ast.Load(), lineno=1, col_offset=0)]),
-                keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
+                func=ast.Name(id="wrapped", ctx=ast.Load(), lineno=1, col_offset=0),
+                args=[ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in spec.args],
+                keywords=[],
+                starargs=ast.Call(
+                    func=ast.Name(id="flatten", ctx=ast.Load(), lineno=1, col_offset=0),
+                    args=[ast.Name(id=spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0)],
+                    keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
+                ),
+                kwargs=None if spec.keywords is None else ast.Name(id=spec.keywords, ctx=ast.Load(), lineno=1, col_offset=0),
+                lineno=1, col_offset=0
             ), lineno=1, col_offset=0)],
             decorator_list=[],
             lineno=1,
             col_offset=0
         )])
         wrapper_code = [c for c in compile(wrapper_ast, "<not_a_file>", "exec").co_consts if isinstance(c, types.CodeType)][0]
-        wrapper = types.FunctionType(wrapper_code, {"call_wrapped": call_wrapped}, argdefs=spec.defaults)
+        wrapper = types.FunctionType(wrapper_code, {"wrapped": wrapped, "flatten": flatten}, argdefs=spec.defaults)
 
         functools.update_wrapper(wrapper, wrapped)
         return wrapper
