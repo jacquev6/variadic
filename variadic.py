@@ -6,32 +6,32 @@
 Define a variadic function:
 
     >>> @variadic(int)
-    ... def f(args):
-    ...   return list(args)
+    ... def f(*xs):
+    ...   return xs
 
 It can be called with a variable number of arguments,
 and they are passed to decorated function as a single, iterable, parameter:
 
     >>> f()
-    []
+    ()
     >>> f(1)
-    [1]
+    (1,)
     >>> f(1, 2, 3, 4)
-    [1, 2, 3, 4]
+    (1, 2, 3, 4)
 
 But it can also be called with lists (any iterable, in fact) of arguments:
 
     >>> f([])
-    []
+    ()
     >>> f([1, 2, 3], [4, 5, 6])
-    [1, 2, 3, 4, 5, 6]
+    (1, 2, 3, 4, 5, 6)
     >>> f(xrange(1, 4))
-    [1, 2, 3]
+    (1, 2, 3)
 
 And you can even mix them:
 
     >>> f(1, [2, 3], 4, xrange(5, 8))
-    [1, 2, 3, 4, 5, 6, 7]
+    (1, 2, 3, 4, 5, 6, 7)
 """
 
 import ast
@@ -78,20 +78,11 @@ def variadic(typ):
         spec = inspect.getargspec(wrapped)
         name = wrapped.__name__
 
-        assert len(spec.args) >= 1
-        assert spec.defaults is None or spec.defaults[-1] == []
-        assert spec.varargs is None
-
-        new_spec = inspect.ArgSpec(
-            args=spec.args[:-1],
-            varargs=spec.args[-1],
-            defaults=None if spec.defaults is None else spec.defaults[:-1],
-            keywords=spec.keywords,
-        )
+        assert spec.varargs is not None
 
         def call_wrapped(posargs, varargs, keywords={}):
             args = list(posargs)
-            args.append(flatten(varargs))
+            args.extend(flatten(varargs))
             return wrapped(*args, **keywords)
 
         # Example was generated with print ast.dump(ast.parse("def f(a, b, *args, **kwds): return call_wrapped((a, b), args, kwds)"), include_attributes=True)
@@ -99,18 +90,18 @@ def variadic(typ):
         # http://stackoverflow.com/questions/10303248#29927459
         if sys.hexversion < 0x03000000:
             wrapper_ast_args = ast.arguments(
-                    args=[ast.Name(id=a, ctx=ast.Param(), lineno=1, col_offset=0) for a in new_spec.args],
-                    vararg=new_spec.varargs,
-                    kwarg=new_spec.keywords,
+                    args=[ast.Name(id=a, ctx=ast.Param(), lineno=1, col_offset=0) for a in spec.args],
+                    vararg=spec.varargs,
+                    kwarg=spec.keywords,
                     defaults=[]
                 )
         else:
             wrapper_ast_args = ast.arguments(
-                args=[ast.arg(arg=a, annotation=None, lineno=1, col_offset=0) for a in new_spec.args],
-                vararg=None if new_spec.varargs is None else ast.arg(arg=new_spec.varargs, annotation=None, lineno=1, col_offset=0),
+                args=[ast.arg(arg=a, annotation=None, lineno=1, col_offset=0) for a in spec.args],
+                vararg=None if spec.varargs is None else ast.arg(arg=spec.varargs, annotation=None, lineno=1, col_offset=0),
                 kwonlyargs=[],
                 kw_defaults=[],
-                kwarg=None if new_spec.keywords is None else ast.arg(arg=new_spec.keywords, annotation=None, lineno=1, col_offset=0),
+                kwarg=None if spec.keywords is None else ast.arg(arg=spec.keywords, annotation=None, lineno=1, col_offset=0),
                 defaults=[]
             )
         wrapper_ast = ast.Module(body=[ast.FunctionDef(
@@ -119,9 +110,9 @@ def variadic(typ):
             body=[ast.Return(value=ast.Call(
                 func=ast.Name(id="call_wrapped", ctx=ast.Load(), lineno=1, col_offset=0),
                 args=[
-                    ast.Tuple(elts=[ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in new_spec.args], ctx=ast.Load(), lineno=1, col_offset=0),
-                    ast.Name(id=new_spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0),
-                ] + ([] if new_spec.keywords is None else [ast.Name(id=new_spec.keywords, ctx=ast.Load(), lineno=1, col_offset=0)]),
+                    ast.Tuple(elts=[ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in spec.args], ctx=ast.Load(), lineno=1, col_offset=0),
+                    ast.Name(id=spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0),
+                ] + ([] if spec.keywords is None else [ast.Name(id=spec.keywords, ctx=ast.Load(), lineno=1, col_offset=0)]),
                 keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
             ), lineno=1, col_offset=0)],
             decorator_list=[],
@@ -129,7 +120,7 @@ def variadic(typ):
             col_offset=0
         )])
         wrapper_code = [c for c in compile(wrapper_ast, "<not_a_file>", "exec").co_consts if isinstance(c, types.CodeType)][0]
-        wrapper = types.FunctionType(wrapper_code, {"call_wrapped": call_wrapped}, argdefs=new_spec.defaults)
+        wrapper = types.FunctionType(wrapper_code, {"call_wrapped": call_wrapped}, argdefs=spec.defaults)
 
         functools.update_wrapper(wrapper, wrapped)
         return wrapper
@@ -139,14 +130,14 @@ def variadic(typ):
 class PurelyVariadicFunctionTestCase(unittest.TestCase):
     def setUp(self):
         @variadic(int)
-        def f(xs):
+        def f(*xs):
             "f's doc"
-            return list(xs)
+            return xs
         self.f = f
         @variadic(int)
-        def g(ys):
+        def g(*ys):
             "g's doc"
-            return list(ys)
+            return ys
         self.g = g
 
     def test_name_is_preserved(self):
@@ -162,22 +153,22 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
         self.assertEqual(inspect.getargspec(self.g).varargs, "ys")
 
     def test_call_without_arguments(self):
-        self.assertEqual(self.f(), [])
+        self.assertEqual(self.f(), ())
 
     def test_call_with_one_argument(self):
-        self.assertEqual(self.f(1), [1])
+        self.assertEqual(self.f(1), (1,))
 
     def test_call_with_several_arguments(self):
-        self.assertEqual(self.f(1, 2, 3), [1, 2, 3])
+        self.assertEqual(self.f(1, 2, 3), (1, 2, 3))
 
     def test_call_with_one_list(self):
-        self.assertEqual(self.f([1, 2, 3]), [1, 2, 3])
+        self.assertEqual(self.f([1, 2, 3]), (1, 2, 3))
 
     def test_call_with_several_lists(self):
-        self.assertEqual(self.f([1, 2], [3], [4, 5]), [1, 2, 3, 4, 5])
+        self.assertEqual(self.f([1, 2], [3], [4, 5]), (1, 2, 3, 4, 5))
 
     def test_call_with_lists_and_arguments(self):
-        self.assertEqual(self.f([1, 2], 3, 4, [5, 6], 7), [1, 2, 3, 4, 5, 6, 7])
+        self.assertEqual(self.f([1, 2], 3, 4, [5, 6], 7), (1, 2, 3, 4, 5, 6, 7))
 
     def test_call_with_keywords(self):
         with self.assertRaises(TypeError) as catcher:
@@ -191,38 +182,38 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
 class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
     def test_args_before_varargs(self):
         @variadic(int)
-        def f(a, b, xs):
-            return a, b, list(xs)
-        self.assertEqual(f(1, 2, 3, [4, 5], 6), (1, 2, [3, 4, 5, 6]))
+        def f(a, b, *xs):
+            return a, b, xs
+        self.assertEqual(f(1, 2, 3, [4, 5], 6), (1, 2, (3, 4, 5, 6)))
 
     @variadic(int)
-    def f(self, a, b, xs):
-        return self, a, b, list(xs)
+    def f(self, a, b, *xs):
+        return self, a, b, xs
 
     def test_method(self):
-        self.assertEqual(self.f(1, 2, 3, [4, 5], 6), (self, 1, 2, [3, 4, 5, 6]))
+        self.assertEqual(self.f(1, 2, 3, [4, 5], 6), (self, 1, 2, (3, 4, 5, 6)))
 
     def test_kwds_after_varargs(self):
         @variadic(int)
-        def f(a, b, xs, **kwds):
-            return a, b, list(xs), kwds
-        self.assertEqual(f(1, 2, 3, [4, 5], 6, c=7, d=8), (1, 2, [3, 4, 5, 6], {"c": 7, "d": 8}))
+        def f(a, b, *xs, **kwds):
+            return a, b, xs, kwds
+        self.assertEqual(f(1, 2, 3, [4, 5], 6, c=7, d=8), (1, 2, (3, 4, 5, 6), {"c": 7, "d": 8}))
 
     def test_defaults_on_args_before_varargs(self):
         default = object()  # To avoid implementations wich would stringify the default values and feed them to exec.
         @variadic(int)
-        def f(a=None, b=default, xs=[]):
-            return a, b, list(xs)
-        self.assertEqual(f(), (None, default, []))
+        def f(a=None, b=default, *xs):
+            return a, b, xs
+        self.assertEqual(f(), (None, default, ()))
 
     def test_closures(self):
         a = 42
         @variadic(int)
-        def f(xs):
-            return a, list(xs)
-        self.assertEqual(f(1, 2), (42, [1, 2]))
+        def f(*xs):
+            return a, xs
+        self.assertEqual(f(1, 2), (42, (1, 2)))
         a = 57
-        self.assertEqual(f(1, 2), (57, [1, 2]))
+        self.assertEqual(f(1, 2), (57, (1, 2)))
 
 
 if __name__ == "__main__":
