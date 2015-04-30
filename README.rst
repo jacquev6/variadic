@@ -29,12 +29,6 @@ Questions? Remarks? Bugs? Want to contribute? `Open an issue <https://github.com
 .. image:: https://img.shields.io/pypi/v/variadic.svg
     :target: https://pypi.python.org/pypi/variadic
 
-.. image:: https://pypip.in/py_versions/variadic/badge.svg
-    :target: https://pypi.python.org/pypi/variadic
-
-.. image:: https://pypip.in/status/variadic/badge.svg
-    :target: https://pypi.python.org/pypi/variadic
-
 .. image:: https://img.shields.io/github/issues/jacquev6/variadic.svg
     :target: https://github.com/jacquev6/variadic/issues
 
