@@ -57,16 +57,14 @@ Install from PyPI::
 
     $ pip install variadic
 
-.. Warning, these are NOT doctests because doctests aren't displayed on GitHub.
+Import:
 
-Import::
+>>> from variadic import variadic
 
-    >>> from variadic import variadic
+Define a function:
 
-Define a function::
-
-    >>> @variadic(int)
-    ... def f(*args):
-    ...   return args
-    >>> f(1, 2, [3, 4], xrange(5, 8))
-    (1, 2, 3, 4, 5, 6, 7)
+>>> @variadic(int)
+... def f(*args):
+...   return args
+>>> f(1, 2, [3, 4], xrange(5, 8))
+(1, 2, 3, 4, 5, 6, 7)
