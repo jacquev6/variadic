@@ -38,5 +38,5 @@ setuptools.setup(
             "release": ("setup.py", version),
             "source_dir": ("setup.py", "doc"),
         },
-    }
+    },
 )
