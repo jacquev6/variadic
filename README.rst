@@ -6,8 +6,8 @@ No ugly ``f(*args, **kwds)`` in your doc!
 
 It's licensed under the `MIT license <http://choosealicense.com/licenses/mit/>`__.
 It's available on the `Python package index <http://pypi.python.org/pypi/variadic>`__,
-its `documentation is hosted by Python <http://pythonhosted.org/variadic>`__
-and its source code is on `GitHub <https://github.com/jacquev6/variadic>`__.
+its `documentation <http://jacquev6.github.io/variadic>`__
+and its `source code <https://github.com/jacquev6/variadic>`__ are on GitHub.
 
 Questions? Remarks? Bugs? Want to contribute? `Open an issue <https://github.com/jacquev6/variadic/issues>`__!
 
