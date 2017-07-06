@@ -5,7 +5,7 @@
 
 import setuptools
 
-version = "0.1.2"
+version = "0.1.3"
 
 
 setuptools.setup(
@@ -15,7 +15,7 @@ setuptools.setup(
     long_description=open("README.rst").read(),
     author="Vincent Jacques",
     author_email="vincent@vincent-jacques.net",
-    url="http://pythonhosted.org/variadic",
+    url="http://jacquev6.github.io/variadic/",
     py_modules=["variadic"],
     license="MIT",
     classifiers=[
@@ -29,6 +29,8 @@ setuptools.setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
     ],
     test_suite="variadic",
     use_2to3=True,
