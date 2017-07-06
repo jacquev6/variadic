@@ -44,4 +44,4 @@ extensions.append("sphinx.ext.doctest")
 # doctest_path
 doctest_global_setup = "from variadic import variadic"
 # doctest_global_cleanup
-doctest_test_doctest_blocks=True
+# doctest_test_doctest_blocks

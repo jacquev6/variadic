@@ -1,7 +1,9 @@
 language: python
 python:
-- 2.7
-- 3.4
+- "2.7"
+- "3.4"
+- "3.5"
+- "3.6"
 sudo: false
 install:
 - pip install sphinx coveralls
@@ -15,6 +17,7 @@ deploy:
   user: jacquev6
   password:
     secure: wk6KM4AQi2CKpKJGoTHqQzP5U1cQzn0HcU5eXngc1Xr91dELJBdyPWF9MyQUuEezoi3XJF5aa+qpHs4GnXSye9RPW6LsHnaHhjEKAoC6x2GFqz0fD+W4vyEj15iY6oGl6erNL2kwrKkY+KIrv5IP89wCuHV4kNWSfPjyXfll9aM=
+  skip_upload_docs: true
   on:
     tags: true
     repo: jacquev6/variadic

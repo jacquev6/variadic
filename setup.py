@@ -12,6 +12,7 @@ setuptools.setup(
     name="variadic",
     version=version,
     description="Decorator for very-variadic functions",
+    long_description=open("README.rst").read(),
     author="Vincent Jacques",
     author_email="vincent@vincent-jacques.net",
     url="http://pythonhosted.org/variadic",

@@ -129,50 +129,97 @@ def variadic(typ):
         return itertools.chain.from_iterable(flat)
 
     def decorator(wrapped):
-        spec = inspect.getargspec(wrapped)
+        if sys.hexversion < 0x03000000:
+            spec = inspect.getargspec(wrapped)
+            assert spec.varargs is not None
+            varargs = spec.varargs
+            keywords = spec.keywords
+        else:
+            spec = inspect.getfullargspec(wrapped)
+            assert spec.varargs is not None
+            assert spec.kwonlyargs == []
+            assert spec.kwonlydefaults is None
+            assert spec.annotations == {}
+            varargs = spec.varargs
+            keywords = spec.varkw
+
         name = wrapped.__name__
 
-        assert spec.varargs is not None
-
-        # Example was generated with print ast.dump(ast.parse("def f(a, b, *args, **kwds): return call_wrapped((a, b), args, kwds)"), include_attributes=True)
+        # Example was generated with print ast.dump(ast.parse("def f(a, b, *args, **kwds):
+        # return call_wrapped((a, b), *args, **kwds)"), include_attributes=True)
         # http://code.activestate.com/recipes/578353-code-to-source-and-back/ helped a lot
         # http://stackoverflow.com/questions/10303248#29927459
+
         if sys.hexversion < 0x03000000:
             wrapper_ast_args = ast.arguments(
-                    args=[ast.Name(id=a, ctx=ast.Param(), lineno=1, col_offset=0) for a in spec.args],
-                    vararg=spec.varargs,
-                    kwarg=spec.keywords,
-                    defaults=[]
-                )
+                args=[ast.Name(id=a, ctx=ast.Param(), lineno=1, col_offset=0) for a in spec.args],
+                vararg=varargs,
+                kwarg=keywords,
+                defaults=[]
+            )
         else:
             wrapper_ast_args = ast.arguments(
                 args=[ast.arg(arg=a, annotation=None, lineno=1, col_offset=0) for a in spec.args],
-                vararg=None if spec.varargs is None else ast.arg(arg=spec.varargs, annotation=None, lineno=1, col_offset=0),
+                vararg=(
+                    None if varargs is None else
+                    ast.arg(arg=varargs, annotation=None, lineno=1, col_offset=0)
+                ),
                 kwonlyargs=[],
                 kw_defaults=[],
-                kwarg=None if spec.keywords is None else ast.arg(arg=spec.keywords, annotation=None, lineno=1, col_offset=0),
+                kwarg=(
+                    None if keywords is None else
+                    ast.arg(arg=keywords, annotation=None, lineno=1, col_offset=0)
+                ),
                 defaults=[]
             )
+
+        wrapped_func = ast.Name(id="wrapped", ctx=ast.Load(), lineno=1, col_offset=0)
+        wrapped_args = [ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in spec.args]
+        flatten_func = ast.Name(id="flatten", ctx=ast.Load(), lineno=1, col_offset=0)
+        flatten_args = [ast.Name(id=spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0)]
+
+        if sys.hexversion < 0x03050000:
+            return_value = ast.Call(
+                func=wrapped_func,
+                args=wrapped_args,
+                keywords=[],
+                    starargs=ast.Call(
+                        func=flatten_func, args=flatten_args,
+                        keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
+                    ),
+                kwargs=(
+                    None if keywords is None else
+                    ast.Name(id=keywords, ctx=ast.Load(), lineno=1, col_offset=0)
+                ),
+                lineno=1, col_offset=0
+            )
+        else:
+            return_value = ast.Call(
+                func=wrapped_func,
+                args=wrapped_args + [
+                    ast.Starred(
+                        value=ast.Call(func=flatten_func, args=flatten_args, keywords=[], lineno=1, col_offset=0),
+                        ctx=ast.Load(), lineno=1, col_offset=0
+                    ),
+                ],
+                keywords=(
+                    [] if keywords is None else
+                    [ast.keyword(arg=None, value=ast.Name(id=keywords, ctx=ast.Load(), lineno=1, col_offset=0))]
+                ),
+                lineno=1, col_offset=0
+            )
+
         wrapper_ast = ast.Module(body=[ast.FunctionDef(
             name=name,
             args=wrapper_ast_args,
-            body=[ast.Return(value=ast.Call(
-                func=ast.Name(id="wrapped", ctx=ast.Load(), lineno=1, col_offset=0),
-                args=[ast.Name(id=a, ctx=ast.Load(), lineno=1, col_offset=0) for a in spec.args],
-                keywords=[],
-                starargs=ast.Call(
-                    func=ast.Name(id="flatten", ctx=ast.Load(), lineno=1, col_offset=0),
-                    args=[ast.Name(id=spec.varargs, ctx=ast.Load(), lineno=1, col_offset=0)],
-                    keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
-                ),
-                kwargs=None if spec.keywords is None else ast.Name(id=spec.keywords, ctx=ast.Load(), lineno=1, col_offset=0),
-                lineno=1, col_offset=0
-            ), lineno=1, col_offset=0)],
+            body=[ast.Return(value=return_value, lineno=1, col_offset=0)],
             decorator_list=[],
             lineno=1,
             col_offset=0
         )])
-        wrapper_code = [c for c in compile(wrapper_ast, "<ast_in_variadic_py>", "exec").co_consts if isinstance(c, types.CodeType)][0]
+        wrapper_code = [
+            c for c in compile(wrapper_ast, "<ast_in_variadic_py>", "exec").co_consts if isinstance(c, types.CodeType)
+        ][0]
         wrapper = types.FunctionType(wrapper_code, {"wrapped": wrapped, "flatten": flatten}, argdefs=spec.defaults)
 
         functools.update_wrapper(wrapper, wrapped)
@@ -186,11 +233,14 @@ class PurelyVariadicFunctionTestCase(unittest.TestCase):
         def f(*xs):
             "f's doc"
             return xs
+
         self.f = f
+
         @variadic(int)
         def g(*ys):
             "g's doc"
             return ys
+
         self.g = g
 
     def test_name_is_preserved(self):
@@ -237,6 +287,7 @@ class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
         @variadic(int)
         def f(a, b, *xs):
             return a, b, xs
+
         self.assertEqual(f(1, 2, 3, [4, 5], 6), (1, 2, (3, 4, 5, 6)))
 
     @variadic(int)
@@ -250,20 +301,25 @@ class NotOnlyVariadicFunctionTestCase(unittest.TestCase):
         @variadic(int)
         def f(a, b, *xs, **kwds):
             return a, b, xs, kwds
+
         self.assertEqual(f(1, 2, 3, [4, 5], 6, c=7, d=8), (1, 2, (3, 4, 5, 6), {"c": 7, "d": 8}))
 
     def test_defaults_on_args_before_varargs(self):
         default = object()  # To avoid implementations wich would stringify the default values and feed them to exec.
+
         @variadic(int)
         def f(a=None, b=default, *xs):
             return a, b, xs
+
         self.assertEqual(f(), (None, default, ()))
 
     def test_closures(self):
         a = 42
+
         @variadic(int)
         def f(*xs):
             return a, xs
+
         self.assertEqual(f(1, 2), (42, (1, 2)))
         a = 57
         self.assertEqual(f(1, 2), (57, (1, 2)))

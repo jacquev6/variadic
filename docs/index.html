@@ -1,0 +1,286 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>variadic &#8212; variadic 0.1.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="variadic">
+<h1>variadic<a class="headerlink" href="#variadic" title="Permalink to this headline">¶</a></h1>
+<p>variadic is a Python (2.7+ and 3.4+) <a class="reference external" href="https://docs.python.org/2/glossary.html#term-decorator">function decorator</a>
+to write variadic functions accepting a mix of arguments and iterables of those arguments.
+Oh, and they keep their <a class="reference external" href="https://docs.python.org/2/library/inspect.html#inspect.getargspec">argspec</a>,
+so tools doing introspection (Sphinx doc, IDEs, etc.) will work well.
+No ugly <code class="docutils literal"><span class="pre">f(*args,</span> <span class="pre">**kwds)</span></code> in your doc!</p>
+<p>It’s licensed under the <a class="reference external" href="http://choosealicense.com/licenses/mit/">MIT license</a>.
+It’s available on the <a class="reference external" href="http://pypi.python.org/pypi/variadic">Python package index</a>,
+its <a class="reference external" href="http://pythonhosted.org/variadic">documentation is hosted by Python</a>
+and its source code is on <a class="reference external" href="https://github.com/jacquev6/variadic">GitHub</a>.</p>
+<p>Questions? Remarks? Bugs? Want to contribute? <a class="reference external" href="https://github.com/jacquev6/variadic/issues">Open an issue</a>!</p>
+<a class="reference external image-reference" href="https://travis-ci.org/jacquev6/variadic"><img alt="https://img.shields.io/travis/jacquev6/variadic/master.svg" src="https://img.shields.io/travis/jacquev6/variadic/master.svg" /></a>
+<a class="reference external image-reference" href="https://coveralls.io/r/jacquev6/variadic"><img alt="https://img.shields.io/coveralls/jacquev6/variadic/master.svg" src="https://img.shields.io/coveralls/jacquev6/variadic/master.svg" /></a>
+<a class="reference external image-reference" href="https://codeclimate.com/github/jacquev6/variadic"><img alt="https://img.shields.io/codeclimate/github/jacquev6/variadic.svg" src="https://img.shields.io/codeclimate/github/jacquev6/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://scrutinizer-ci.com/g/jacquev6/variadic"><img alt="https://img.shields.io/scrutinizer/g/jacquev6/variadic.svg" src="https://img.shields.io/scrutinizer/g/jacquev6/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/variadic"><img alt="https://img.shields.io/pypi/dm/variadic.svg" src="https://img.shields.io/pypi/dm/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/variadic"><img alt="https://img.shields.io/pypi/l/variadic.svg" src="https://img.shields.io/pypi/l/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/variadic"><img alt="https://img.shields.io/pypi/v/variadic.svg" src="https://img.shields.io/pypi/v/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/variadic"><img alt="https://img.shields.io/pypi/pyversions/variadic.svg" src="https://img.shields.io/pypi/pyversions/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/variadic"><img alt="https://img.shields.io/pypi/status/variadic.svg" src="https://img.shields.io/pypi/status/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/jacquev6/variadic/issues"><img alt="https://img.shields.io/github/issues/jacquev6/variadic.svg" src="https://img.shields.io/github/issues/jacquev6/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://waffle.io/jacquev6/variadic"><img alt="https://badge.waffle.io/jacquev6/variadic.png?label=ready&amp;title=ready" src="https://badge.waffle.io/jacquev6/variadic.png?label=ready&amp;title=ready" /></a>
+<a class="reference external image-reference" href="https://github.com/jacquev6/variadic/network"><img alt="https://img.shields.io/github/forks/jacquev6/variadic.svg" src="https://img.shields.io/github/forks/jacquev6/variadic.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/jacquev6/variadic/stargazers"><img alt="https://img.shields.io/github/stars/jacquev6/variadic.svg" src="https://img.shields.io/github/stars/jacquev6/variadic.svg" /></a>
+<div class="section" id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>Install from PyPI:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install variadic
+</pre></div>
+</div>
+<p>Import:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">variadic</span> <span class="k">import</span> <span class="n">variadic</span>
+</pre></div>
+</div>
+<p>Define a function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@variadic</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">return</span> <span class="n">args</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="go">(1, 2, 3, 4, 5, 6, 7)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-variadic">
+<span id="user-guide"></span><h2>User guide<a class="headerlink" href="#module-variadic" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h3>
+<p>Define a variadic function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@variadic</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">*</span><span class="n">xs</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">return</span> <span class="n">xs</span>
+</pre></div>
+</div>
+<p>It can be called with a variable number of arguments:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">()</span>
+<span class="go">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">(1, 2, 3, 4)</span>
+</pre></div>
+</div>
+<p>So far, no change, but it can also be called with lists (any iterable, in fact) of arguments:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">([])</span>
+<span class="go">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="go">(1, 2, 3, 4, 5, 6)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">(1, 2, 3)</span>
+</pre></div>
+</div>
+<p>And you can even mix them:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="go">(1, 2, 3, 4, 5, 6, 7)</span>
+</pre></div>
+</div>
+<p>Positional arguments, default values and keyword arguments are OK as well:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@variadic</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">cs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">kwds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">(1, None, (), {})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">(1, None, (), {&#39;d&#39;: 4})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">5</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">(1, 2, (3, 4, 5), {&#39;d&#39;: 6})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pearls">
+<h3>Pearls<a class="headerlink" href="#pearls" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="documentation-generated-by-sphinx-for-decorated-functions">
+<h4>Documentation generated by Sphinx for decorated functions<a class="headerlink" href="#documentation-generated-by-sphinx-for-decorated-functions" title="Permalink to this headline">¶</a></h4>
+<p>It looks like a regular variadic function:</p>
+<dl class="function">
+<dt id="variadic.demo">
+<code class="descname">demo</code><span class="sig-paren">(</span><em>a</em>, <em>b=None</em>, <em>*xs</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#variadic.demo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Demo function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>a</strong> – A</li>
+<li><strong>b</strong> – B</li>
+<li><strong>xs</strong> – Xs</li>
+<li><strong>kwds</strong> – keywords</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="typeerror-raised-when-calling-with-bad-arguments">
+<h4>TypeError raised when calling with bad arguments<a class="headerlink" href="#typeerror-raised-when-calling-with-bad-arguments" title="Permalink to this headline">¶</a></h4>
+<p>Exactly as if it was not decorated:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@variadic</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">*</span><span class="n">xs</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">TypeError</span>: <span class="n">f() got an unexpected keyword argument &#39;a&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exception-raised-by-the-decorated-function">
+<h4>Exception raised by the decorated function<a class="headerlink" href="#exception-raised-by-the-decorated-function" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal"><span class="pre">&#64;variadic</span></code> adds just one stack frame with the same name as the decorated function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@variadic</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">*</span><span class="n">xs</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">raise</span> <span class="ne">Exception</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;&lt;ast_in_variadic_py&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">f</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">3</span>, in <span class="n">f</span>
+<span class="gr">Exception</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="variadic.variadic">
+<code class="descname">variadic</code><span class="sig-paren">(</span><em>typ</em><span class="sig-paren">)</span><a class="headerlink" href="#variadic.variadic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator taking a variadic function and making a very-variadic function from it:
+a function that can be called with a variable number of iterables of arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>typ</strong> – the type (or tuple of types) of arguments expected.
+Variadic arguments that are instances of this type will be passed to the decorated function as-is.
+Others will be iterated and their contents will be passed.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://blog.dscpl.com.au/2014/01/how-you-implemented-your-python.html">How you implemented your Python decorator is wrong.</a></li>
+<li><a class="reference external" href="http://stackoverflow.com/questions/29919804">Function decorated using functools.wraps raises TypeError with the name of the wrapper. Why? How to avoid?</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">variadic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=jacquev6&repo=variadic&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/jacquev6/variadic">
+    <img
+        alt="https://secure.travis-ci.org/jacquev6/variadic.svg?branch=master"
+        src="https://secure.travis-ci.org/jacquev6/variadic.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015 <a href="http://vincent-jacques.net/contact">Vincent Jacques</a>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/jacquev6/variadic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
