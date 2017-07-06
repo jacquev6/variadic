@@ -183,10 +183,10 @@ def variadic(typ):
                 func=wrapped_func,
                 args=wrapped_args,
                 keywords=[],
-                    starargs=ast.Call(
-                        func=flatten_func, args=flatten_args,
-                        keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
-                    ),
+                starargs=ast.Call(
+                    func=flatten_func, args=flatten_args,
+                    keywords=[], starargs=None, kwargs=None, lineno=1, col_offset=0
+                ),
                 kwargs=(
                     None if keywords is None else
                     ast.Name(id=keywords, ctx=ast.Load(), lineno=1, col_offset=0)
