@@ -5,7 +5,8 @@
 master_doc = "index"
 project = "variadic"
 author = '<a href="http://vincent-jacques.net/contact">Vincent Jacques</a>'
-copyright = "2015 {}".format(author)
+copyright = ('2015 {} <script>var jacquev6_ribbon_github="{}"</script>'.format(author, project) +
+             '<script src="https://jacquev6.github.io/ribbon.js"></script>')
 extensions = []
 
 
@@ -23,7 +24,6 @@ html_sidebars = {
 html_theme_options = {
     "github_user": "jacquev6",
     "github_repo": project,
-    "github_banner": True,
     "travis_button": True,
 }
 
