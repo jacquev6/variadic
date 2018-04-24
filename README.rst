@@ -1,4 +1,4 @@
-variadic is a Python (2.7+ and 3.4+) `function decorator <https://docs.python.org/2/glossary.html#term-decorator>`__
+*variadic* is a Python (2.7+ and 3.4+) `function decorator <https://docs.python.org/2/glossary.html#term-decorator>`__
 to write variadic functions accepting a mix of arguments and iterables of those arguments.
 Oh, and they keep their `argspec <https://docs.python.org/2/library/inspect.html#inspect.getargspec>`__,
 so tools doing introspection (Sphinx doc, IDEs, etc.) will work well.
