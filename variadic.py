@@ -98,6 +98,7 @@ import unittest
 # - allow an even simpler usage without any parameters
 # - add a parameter string to be prepended or appended to the docstring
 # - support decorating callables that are not functions?
+# - support keyword-only parameter (on Python 3)
 
 
 # >>> help(types.FunctionType)
