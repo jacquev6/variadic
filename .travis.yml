@@ -6,11 +6,12 @@ python:
 - "3.6"
 sudo: false
 install:
-- pip install sphinx coveralls
+- pip install sphinx coverage
 script:
 - coverage run --include=variadic.py setup.py test
 - if [ "v$TRAVIS_PYTHON_VERSION" == "v2.7" ]; then python setup.py build_sphinx --builder=doctest; fi
 after_success:
+- pip install coveralls
 - coveralls
 deploy:
   provider: pypi
