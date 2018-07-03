@@ -4,6 +4,9 @@ Oh, and they keep their `argspec <https://docs.python.org/2/library/inspect.html
 so tools doing introspection (Sphinx doc, IDEs, etc.) will work well.
 No ugly ``f(*args, **kwds)`` in your doc!
 
+Note that `PEP 448 <https://www.python.org/dev/peps/pep-0448/>`_ makes *variadic* obsolete:
+**if you're using Python 3.5+, you should keep plain variadic functions and call them with several argument unpackings.**
+
 It's licensed under the `MIT license <http://choosealicense.com/licenses/mit/>`__.
 It's available on the `Python package index <http://pypi.python.org/pypi/variadic>`__,
 its `documentation <http://jacquev6.github.io/variadic>`__
