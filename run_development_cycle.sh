@@ -14,7 +14,7 @@ python2 setup.py build_sphinx --builder=doctest
 
 python2 setup.py check --strict --metadata --restructuredtext
 
-pep8 --max-line-length=120 variadic.py doc/conf.py
+pycodestyle --max-line-length=120 variadic.py doc/conf.py
 
 python2 setup.py build_sphinx
 rm -rf docs
