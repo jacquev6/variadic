@@ -4,14 +4,14 @@ python:
 - "3.4"
 - "3.5"
 - "3.6"
+dist: trusty
 sudo: false
 install:
-- pip install sphinx coverage
+- pip install --upgrade pip setuptools coverage sphinx coveralls
 script:
-- coverage run --include=variadic.py setup.py test
+- coverage run --include=variadic*,build/lib/variadic* setup.py test
 - if [ "v$TRAVIS_PYTHON_VERSION" == "v2.7" ]; then python setup.py build_sphinx --builder=doctest; fi
 after_success:
-- pip install coveralls
 - coveralls
 deploy:
   provider: pypi

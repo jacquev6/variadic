@@ -1,0 +1,27 @@
+format: 1
+project:
+  name: variadic
+  version: 0.1.4
+  status: alpha
+  short_descriptions:
+    github: Python decorator for very-variadic functions
+    pypi: Decorator for very-variadic functions
+    readme:
+      - "*variadic* is a Python (2.7+ and 3.4+) `function decorator <https://docs.python.org/2/glossary.html#term-decorator>`_"
+      - to write variadic functions accepting a mix of arguments and iterables of those arguments.
+      - Oh, and they keep their `argspec <https://docs.python.org/2/library/inspect.html#inspect.getargspec>`_,
+      - so tools doing introspection (Sphinx doc, IDEs, etc.) will work well.
+      - No ugly ``f(*args, **kwds)`` in your doc!
+      - ""
+      - "Note that `PEP 448 <https://www.python.org/dev/peps/pep-0448/>`_ makes *variadic* obsolete:"
+      - "**if you're using Python 3.5+, you should keep plain variadic functions and call them with several argument unpackings.**"
+  has_readme_rst: true
+  has_github_pages: true
+python:
+  versions:
+    either:
+      - at_least: 2.7
+        less_than: 3
+      - at_least: 3.4
+        less_than: 4
+  single_module: true

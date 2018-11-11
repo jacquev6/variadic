@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2015 Vincent Jacques <vincent@vincent-jacques.net>
+# Copyright 2015-2018 Vincent Jacques <vincent@vincent-jacques.net>
 
 """
 Introduction

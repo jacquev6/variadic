@@ -1,6 +1,6 @@
 # coding: utf-8
 
-# Copyright 2014-2015 Vincent Jacques <vincent@vincent-jacques.net>
+# Copyright 2015-2018 Vincent Jacques <vincent@vincent-jacques.net>
 
 master_doc = "index"
 project = "variadic"
@@ -37,6 +37,10 @@ autodoc_member_order = "bysource"
 # autodoc_mock_imports
 add_module_names = False
 add_class_names = False
+
+
+# http://sphinx-doc.org/ext/githubpages.html
+extensions.append("sphinx.ext.githubpages")
 
 
 # http://sphinx-doc.org/ext/doctest.html

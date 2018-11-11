@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # coding: utf8
 
-# Copyright 2015 Vincent Jacques <vincent@vincent-jacques.net>
+# Copyright 2015-2018 Vincent Jacques <vincent@vincent-jacques.net>
 
 import setuptools
 
 version = "0.1.4"
-
 
 setuptools.setup(
     name="variadic",
@@ -15,8 +14,7 @@ setuptools.setup(
     long_description=open("README.rst").read(),
     author="Vincent Jacques",
     author_email="vincent@vincent-jacques.net",
-    url="http://jacquev6.github.io/variadic/",
-    py_modules=["variadic"],
+    url="http://jacquev6.github.io/variadic",
     license="MIT",
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -31,10 +29,12 @@ setuptools.setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Topic :: Software Development",
     ],
-    test_suite="variadic",
+    py_modules=["variadic"],
     use_2to3=True,
-    convert_2to3_doctests = ["variadic.py", "README.rst"],
+    convert_2to3_doctests=["variadic.py", "README.rst"],
+    test_suite="variadic",
     command_options={
         "build_sphinx": {
             "version": ("setup.py", version),
