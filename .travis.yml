@@ -8,8 +8,6 @@ dist: trusty
 sudo: false
 install:
 - pip install --upgrade pip setuptools coverage sphinx coveralls
-# Temporary workaround for https://travis-ci.org/jacquev6/variadic/jobs/523061900#L588
-- if [ "v$TRAVIS_PYTHON_VERSION" == "v2.7" ]; then pip install urllib3==1.24.2; fi
 script:
 - coverage run --include=variadic*,build/lib/variadic* setup.py test
 - if [ "v$TRAVIS_PYTHON_VERSION" == "v2.7" ]; then python setup.py build_sphinx --builder=doctest; fi
